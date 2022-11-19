@@ -1,5 +1,5 @@
 {
-    "name": "LEDManager",
+    "name": "Pixel",
     "description": "Make neopixels blink",
     "platforms": [
         "espressif32"
