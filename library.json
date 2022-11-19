@@ -1,0 +1,22 @@
+{
+    "name": "LEDManager",
+    "description": "Make neopixels blink",
+    "platforms": [
+        "espressif32"
+    ],
+    "framework": "arduino",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sivar2311/Pixel.git"
+    },
+    "dependencies": [
+        {
+            "owner": "FastLED",
+            "name": "FastLED",
+            "version": "*",
+            "platforms": [
+                "espressif32"
+            ]
+        }
+    ]
+}
