@@ -5,15 +5,18 @@
 enum PixelMode_t {
     off,
     steady,
-    blink
+    blink,
+    shifted
 };
 
 struct BlinkInfo_t {
-    unsigned long interval      = 0;
-    unsigned long blink_count   = 0;
-    unsigned long blink_counter = 0;
-    unsigned long last_blink    = 0;
-    bool          state         = false;
+    unsigned long interval;
+    unsigned long off_interval;
+    unsigned long blink_count;
+    unsigned long blink_counter;
+    unsigned long last_blink;
+    unsigned long shift;
+    bool          state;
 };
 
 class Pixel {
@@ -25,8 +28,9 @@ class Pixel {
 
     Pixel& blink(const CRGB& color, unsigned long interval, unsigned int count = 0);
     void   color(const CRGB& color);
-    void   backgroundColor(const CRGB& color);
-    void   shift(long ms);
+    Pixel& backgroundColor(const CRGB& color);
+    Pixel& shift(long ms);
+    Pixel& off_interval(long ms);
 
   protected:
     void _loop();

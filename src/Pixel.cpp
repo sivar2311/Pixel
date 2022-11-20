@@ -14,17 +14,21 @@ Pixel::~Pixel() {
 Pixel& Pixel::blink(const CRGB& color, unsigned long interval, unsigned int count) {
     _pixel_mode = PixelMode_t::blink;
 
-    _color                    = color;
-    _blink_info.interval      = interval;
-    _blink_info.blink_count   = count;
-    _blink_info.blink_counter = 1;
-    _blink_info.last_blink    = millis();
-    _blink_info.state         = true;
-    _background_color         = CRGB::Black;
+    _color            = color;
+    _background_color = CRGB::Black;
+//    _led              = _color;
 
-    _led = _color;
+    _blink_info = {
+        .interval      = interval,
+        .off_interval  = interval,
+        .blink_count   = count,
+        .blink_counter = 1,
+        .last_blink    = millis(),
+        .shift         = 0,
+        .state         = true,
+    };
 
-    PixelManager::update();
+//    PixelManager::update();
     return *this;
 }
 
@@ -37,22 +41,39 @@ void Pixel::color(const CRGB& color) {
     PixelManager::update();
 }
 
-void Pixel::backgroundColor(const CRGB& color) {
+Pixel& Pixel::backgroundColor(const CRGB& color) {
     _background_color = color;
+    return *this;
 }
 
 void Pixel::_loop() {
+    unsigned long current_millis = millis();
+
+    if (_pixel_mode == PixelMode_t::shifted &&  current_millis >= _blink_info.shift) {
+        _pixel_mode = PixelMode_t::blink;
+        _blink_info.last_blink = current_millis;
+        _blink_info.state = true;
+        _led = _color;
+        PixelManager::update();
+        return;
+    }
+
     if (_pixel_mode != PixelMode_t::blink) return;
 
-    if (_blink_info.blink_count && _blink_info.blink_counter > _blink_info.blink_count) {
+    unsigned long max_count = _blink_info.blink_count;
+    unsigned long counter = _blink_info.blink_counter;
+
+    if (max_count && counter > max_count) {
         _pixel_mode = PixelMode_t::off;
         _led        = _background_color;
         PixelManager::update();
     }
 
-    unsigned long current_millis = millis();
 
-    if (current_millis - _blink_info.last_blink >= _blink_info.interval) {
+    long          wait_time    = _blink_info.state ? _blink_info.interval : _blink_info.off_interval;
+    unsigned long elapsed_time = current_millis - _blink_info.last_blink;
+
+    if (elapsed_time >= wait_time) {
         _blink_info.last_blink = current_millis;
         _blink_info.state      = !_blink_info.state;
         if (!_blink_info.state) _blink_info.blink_counter++;
@@ -61,6 +82,14 @@ void Pixel::_loop() {
     }
 }
 
-void Pixel::shift(long ms) {
-    _blink_info.last_blink -= ms;
+Pixel& Pixel::shift(long ms) {
+    _blink_info.shift = millis() + ms;
+    _pixel_mode = PixelMode_t::shifted;
+    _led = _background_color;
+    return *this;
+}
+
+Pixel& Pixel::off_interval(long ms) {
+    _blink_info.off_interval = ms;
+    return *this;
 }
