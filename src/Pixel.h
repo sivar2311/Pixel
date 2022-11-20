@@ -26,6 +26,7 @@ class Pixel {
     Pixel& blink(const CRGB& color, unsigned long interval, unsigned int count = 0);
     void   color(const CRGB& color);
     void   backgroundColor(const CRGB& color);
+    void   shift(long ms);
 
   protected:
     void _loop();

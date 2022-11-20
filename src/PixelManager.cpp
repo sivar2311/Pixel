@@ -47,6 +47,6 @@ void PixelManager::_task(void* arg) {
     for (;;) {
         for (auto pixel : pixels) pixel->_loop();
         if (_update) _update_string();
-        vTaskDelay(10 / portTICK_RATE_MS);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 }

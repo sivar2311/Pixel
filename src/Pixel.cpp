@@ -17,12 +17,12 @@ Pixel& Pixel::blink(const CRGB& color, unsigned long interval, unsigned int coun
     _color                    = color;
     _blink_info.interval      = interval;
     _blink_info.blink_count   = count;
-    _blink_info.blink_counter = 0;
-    _blink_info.last_blink    = 0;
+    _blink_info.blink_counter = 1;
+    _blink_info.last_blink    = millis();
     _blink_info.state         = true;
     _background_color         = CRGB::Black;
 
-    _led = color;
+    _led = _color;
 
     PixelManager::update();
     return *this;
@@ -52,12 +52,15 @@ void Pixel::_loop() {
 
     unsigned long current_millis = millis();
 
-    if (current_millis - _blink_info.last_blink > _blink_info.interval) {
+    if (current_millis - _blink_info.last_blink >= _blink_info.interval) {
         _blink_info.last_blink = current_millis;
         _blink_info.state      = !_blink_info.state;
         if (!_blink_info.state) _blink_info.blink_counter++;
         _led = _blink_info.state ? _color : _background_color;
-
         PixelManager::update();
     }
+}
+
+void Pixel::shift(long ms) {
+    _blink_info.last_blink -= ms;
 }
