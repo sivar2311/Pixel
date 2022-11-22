@@ -15,7 +15,7 @@ class PixelManager {
 
     static void add(Pixel*);
     static void remove(Pixel*);
-    static void update();
+    static void force_update();
 
     static Pixels& _getPixels();
     static void    _update_string();

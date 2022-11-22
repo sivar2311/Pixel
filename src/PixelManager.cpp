@@ -24,7 +24,7 @@ void PixelManager::remove(Pixel* pixel) {
     pixels.erase(std::remove(pixels.begin(), pixels.end(), pixel), pixels.end());
 }
 
-void PixelManager::update() {
+void PixelManager::force_update() {
     _update = true;
 }
 
