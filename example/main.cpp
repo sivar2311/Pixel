@@ -19,10 +19,6 @@ void setup_fastled() {
     FastLED.show();
 }
 
-const unsigned long duration = 500;
-const unsigned long length   = 5000;
-const unsigned long phase    = 50;
-
 void blink_all(const CRGB& color, const CRGB& bgColor = CRGB::Black) {
     pixel1.blink(color, 500).bgColor(bgColor);
     pixel2.blink(color, 500).bgColor(bgColor);
