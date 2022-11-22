@@ -1,51 +1,112 @@
 #include <Arduino.h>
-
 #include <Pixel.h>
 
-const size_t NUM_LEDS_STRIPE_1 = 3;
-const size_t NUM_LEDS_STRIPE_2 = 3;
+#include <FastLED.h>
 
-CRGB stripe_1[NUM_LEDS_STRIPE_1]{0};
-CRGB stripe_2[NUM_LEDS_STRIPE_2]{0};
+const int    GPIO_LEDS       = 25;
+const size_t NUM_LEDS_STRIPE = 6;
+CRGB         stripe[NUM_LEDS_STRIPE]{0};
 
-Pixel pixel(stripe_1[0]);
+Pixel pixel1(stripe[0]);
+Pixel pixel2(stripe[1]);
+Pixel pixel3(stripe[2]);
+Pixel pixel4(stripe[3]);
+Pixel pixel5(stripe[4]);
+Pixel pixel6(stripe[5]);
 
 void setup_fastled() {
-    FastLED.addLeds<WS2812B, 25, RGB>(stripe_1, NUM_LEDS_STRIPE_1);
-    FastLED.addLeds<WS2812B, 26, RGB>(stripe_2, NUM_LEDS_STRIPE_2);
-    FastLED.setBrightness(64);
+    FastLED.addLeds<WS2812B, GPIO_LEDS, RGB>(stripe, NUM_LEDS_STRIPE);
     FastLED.show();
 }
 
-void black_to_red() {
-    pixel.blink(CRGB::Red, 250, 10);
-    delay(6000);
-    pixel.color(CRGB::Red);
-    delay(2000);
+const unsigned long duration = 500;
+const unsigned long length   = 5000;
+const unsigned long phase    = 50;
+
+void blink_all(const CRGB& color, const CRGB& bgColor = CRGB::Black) {
+    pixel1.blink(color, 500).bgColor(bgColor);
+    pixel2.blink(color, 500).bgColor(bgColor);
+    pixel3.blink(color, 500).bgColor(bgColor);
+    pixel4.blink(color, 500).bgColor(bgColor);
+    pixel5.blink(color, 500).bgColor(bgColor);
+    pixel6.blink(color, 500).bgColor(bgColor);
+    delay(5000);
 }
 
-void red_to_green() {
-    pixel.blink(CRGB::Red, 250, 10).backgroundColor(CRGB::Green);
-    delay(7000);
+void runway_right(const CRGB& color) {
+    pixel1.blink(color, 100).off_interval(600).shift(0);
+    pixel2.blink(color, 100).off_interval(600).shift(100);
+    pixel3.blink(color, 100).off_interval(600).shift(200);
+    pixel4.blink(color, 100).off_interval(600).shift(300);
+    pixel5.blink(color, 100).off_interval(600).shift(400);
+    pixel6.blink(color, 100).off_interval(600).shift(500);
+    delay(4000);
 }
 
-void green_to_blue() {
-    pixel.blink(CRGB::Green, 250, 10).backgroundColor(CRGB::Blue);
-    delay(7000);
+
+void runway_left(const CRGB& color) {
+    pixel1.blink(color, 100).off_interval(600).shift(500);
+    pixel2.blink(color, 100).off_interval(600).shift(400);
+    pixel3.blink(color, 100).off_interval(600).shift(300);
+    pixel4.blink(color, 100).off_interval(600).shift(200);
+    pixel5.blink(color, 100).off_interval(600).shift(100);
+    pixel6.blink(color, 100).off_interval(600).shift(0);
+    delay(4000);
 }
 
-void blue_to_red() {
-    pixel.blink(CRGB::Blue, 250, 10).backgroundColor(CRGB::Red);
-    delay(7000);
+void right(const CRGB& color) {
+    pixel1.blink(color, 500).shift(0);
+    pixel2.blink(color, 500).shift(100);
+    pixel3.blink(color, 500).shift(200);
+    pixel4.blink(color, 500).shift(300);
+    pixel5.blink(color, 500).shift(400);
+    pixel6.blink(color, 500).shift(500);
+    delay(5000);
+}
+
+void left(const CRGB& color) {
+    pixel1.blink(color, 500).shift(500);
+    pixel2.blink(color, 500).shift(400);
+    pixel3.blink(color, 500).shift(300);
+    pixel4.blink(color, 500).shift(200);
+    pixel5.blink(color, 500).shift(100);
+    pixel6.blink(color, 500).shift(0);
+    delay(5000);
+}
+
+void outer(const CRGB& color) {
+    pixel1.blink(color, 500).shift(200);
+    pixel2.blink(color, 500).shift(100);
+    pixel3.blink(color, 500).shift(0);
+    pixel4.blink(color, 500).shift(0);
+    pixel5.blink(color, 500).shift(100);
+    pixel6.blink(color, 500).shift(200);
+    delay(5200);
+}
+
+void inner(const CRGB& color) {
+    pixel1.blink(color, 500).shift(0);
+    pixel2.blink(color, 500).shift(100);
+    pixel3.blink(color, 500).shift(200);
+    pixel4.blink(color, 500).shift(200);
+    pixel5.blink(color, 500).shift(100);
+    pixel6.blink(color, 500).shift(0);
+    delay(5200);
 }
 
 void setup() {
+    Serial.begin(115200);
     setup_fastled();
-    black_to_red();
+    delay(2000);
 }
 
 void loop() {
-    red_to_green();
-    green_to_blue();
-    blue_to_red();
+    blink_all(CRGB::Red);
+    blink_all(CRGB::Green, CRGB::Blue);
+    runway_right(CRGB::Red);
+    runway_left(CRGB::Green);
+    right(CRGB::Red);
+    left(CRGB::Green);
+    inner(CRGB::Blue);
+    outer(CRGB::Green);
 }
